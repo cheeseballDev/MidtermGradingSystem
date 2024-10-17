@@ -10,19 +10,43 @@ public class Grades implements Runnable {
         Exam examStatus = new Exam();
         Quiz quizStatus = new Quiz();
         Essay essayStatus = new Essay();
-        if(!examStatus.isFinished() && !quizStatus.isFinished() && !quizStatus.isFinished()){
+        while (true) {
+            if(!examStatus.isFinished() && !quizStatus.isFinished() && !essayStatus.isFinished()){
+                String choice = userInput.nextLine();
+                getGradeType(choice);
+            }
+            System.out.println("Please select of the following: 'EXAM' 'QUIZ' 'ESSAY'");
+    
+            break;
+            
+            System.out.println("Please enter the course, year level, and score of the exam.");
+            getExamInfo(userInput);
+            System.out.println("Please enter the course, year level, and score of the essay.");
+            getEssayInfo(userInput);
+            System.out.println("Please enter the course, year level, and score of the exams.");
+            getQuizInfo(userInput);
+        }
+        
+    }
+
+    private void getGradeType(String choice) {
+        switch (choice) {
+            case "EXAM":
+
+                break;
+            case "QUIZ":
+
+                break;
+            case "ESSAY":
+
+                break;
+            default:
+                
 
         }
-        System.out.println("Enter a selected");
-
-        
-        System.out.println("Please enter the course, year level, and score of the exam.");
-        getExamInfo(userInput);
-        System.out.println("Please enter the course, year level, and score of the essay.");
-        getEssayInfo(userInput);
-        System.out.println("Please enter the course, year level, and score of the exams.");
-        getQuizInfo(userInput);
     }
+
+
     /*
      * EXAM
      */
@@ -32,8 +56,6 @@ public class Grades implements Runnable {
         if (!exam.isFinished()) {
             while (true) {
                 try {
-                    Midterm midterm = new Midterm();
-                    midterm.printGoodLuck();
                     String course = userInput.nextLine();
                     int yearLevel = Integer.parseInt(userInput.nextLine());
                     double score = Double.parseDouble(userInput.nextLine());
@@ -41,8 +63,8 @@ public class Grades implements Runnable {
                     examObject.setCourse(course);
                     examObject.setYearLevel(yearLevel);
                     displayExamInfo(examObject);
-                } catch (Exception e) {
-                    
+                } catch (NumberFormatException e) {
+                    printErrorInvalidConversion();
                 }
             }
         }
@@ -78,10 +100,29 @@ public class Grades implements Runnable {
     private void displayQuizInfo() {
 
     }
+
+
+
+    private void computeTotal() {
+
+    }
     
     /*
       * EXTERNAL
       */
+
+    private void printErrorInvalidConversion() {
+        clearScreen();
+        System.out.print("Invalid number, please try again!");
+        char[] characters = {'.', ' ', '.', ' ', '.', ' ', '.'};
+
+        for(int i = 0; i < characters.length; i++) {
+            System.out.print(characters[i]);
+            pause(300);
+        }
+        clearScreen();
+    }
+    
     private void printErrorInvalidUserType() {
         clearScreen();
         System.out.print("Invalid type, please try again!");
