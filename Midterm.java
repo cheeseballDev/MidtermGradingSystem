@@ -1,4 +1,4 @@
-package College;
+package MidtermGradingSystem;
 
 public class Midterm extends Grades {
     private String course;

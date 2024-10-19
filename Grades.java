@@ -1,60 +1,49 @@
-package College;
+package MidtermGradingSystem;
 
 import java.util.Scanner;
 
 public class Grades implements Runnable {
     public void getType() {
         Scanner userInput = new Scanner(System.in);
-
         // add if statement to check if all processes are done.
         Exam examStatus = new Exam();
         Quiz quizStatus = new Quiz();
         Essay essayStatus = new Essay();
         while (true) {
             if(!examStatus.isFinished() && !quizStatus.isFinished() && !essayStatus.isFinished()){
+                System.out.println("Please select of the following: 'EXAM' 'QUIZ' 'ESSAY'");
                 String choice = userInput.nextLine();
-                getGradeType(choice);
+                getGradeType(userInput, choice, examStatus, quizStatus, essayStatus);
             }
-            System.out.println("Please select of the following: 'EXAM' 'QUIZ' 'ESSAY'");
-    
             break;
-            
-            System.out.println("Please enter the course, year level, and score of the exam.");
-            getExamInfo(userInput);
-            System.out.println("Please enter the course, year level, and score of the essay.");
-            getEssayInfo(userInput);
-            System.out.println("Please enter the course, year level, and score of the exams.");
-            getQuizInfo(userInput);
         }
-        
+        addTotal("FINISH", 0);
     }
 
-    private void getGradeType(String choice) {
+    private void getGradeType(Scanner userInput, String choice, Exam examStatus, Quiz quizStatus ,Essay essayStatus) {
         switch (choice) {
             case "EXAM":
-
+                getExamInfo(userInput, examStatus);
                 break;
             case "QUIZ":
-
+                getQuizInfo(userInput, quizStatus);
                 break;
             case "ESSAY":
-
+                getEssayInfo(userInput, essayStatus);
                 break;
             default:
-                
-
+                printErrorInvalidUserType();
         }
     }
-
 
     /*
      * EXAM
      */
 
-    private void getExamInfo(Scanner userInput) {
-        Exam exam = new Exam();
-        if (!exam.isFinished()) {
+    private void getExamInfo(Scanner userInput, Exam examStatus) {
+        if (!examStatus.isFinished()) {
             while (true) {
+                System.out.println("Please enter the course, year level, and score of the exam.");
                 try {
                     String course = userInput.nextLine();
                     int yearLevel = Integer.parseInt(userInput.nextLine());
@@ -62,7 +51,8 @@ public class Grades implements Runnable {
                     Exam examObject = new Exam(score, true);
                     examObject.setCourse(course);
                     examObject.setYearLevel(yearLevel);
-                    displayExamInfo(examObject);
+                    displayExamInfo(examObject, examStatus);
+                    addTotal("EXAM",score);
                 } catch (NumberFormatException e) {
                     printErrorInvalidConversion();
                 }
@@ -72,39 +62,86 @@ public class Grades implements Runnable {
         getType();
     }
 
-    private void displayExamInfo(Exam examObject) {
-        System.out.println("The exam grades for the course '"+examObject.getCourse()+"' for the year level of '"+examObject.getYearLevel()+"' is "+examObject.getScore());
-        examObject.setFinished(true);
+    private void displayExamInfo(Exam examObject, Exam examStatus) {
+        System.out.println("The exam grade for the course '"+examObject.getCourse()+"' for the year level of '"+examObject.getYearLevel()+"' is "+examObject.getScore());
+        examStatus.setFinished(true);
     }
 
     /*
      * ESSAY
      */
 
-    private void getEssayInfo(Scanner userInput) {
-
+    private void getEssayInfo(Scanner userInput, Essay essayStatus) {
+        if (!essayStatus.isFinished()) {
+            while (true) {
+                System.out.println("Please enter the course, year level, and score of the essay.");
+                try {
+                    String course = userInput.nextLine();
+                    int yearLevel = Integer.parseInt(userInput.nextLine());
+                    double score = Double.parseDouble(userInput.nextLine());
+                    Essay essayObject = new Essay(score, true);
+                    essayObject.setCourse(course);
+                    essayObject.setYearLevel(yearLevel);
+                    displayEssayInfo(essayObject, essayStatus);
+                    addTotal("ESSAY" , score);
+                } catch (NumberFormatException e) {
+                    printErrorInvalidConversion();
+                }
+            }
+        }
+        printErrorAlreadyFinished();
+        getType();
     }
 
-    private void displayEssayInfo() {
-
+    private void displayEssayInfo(Essay essayObject, Essay essayStatus) {
+        System.out.println("The essay grade for the course '"+essayObject.getCourse()+"' for the year level of '"+essayObject.getYearLevel()+"' is "+ essayObject.getScore());
+        essayObject.setFinished(true);
     }
 
     /*
      * QUIZ
      */
 
-    private void getQuizInfo(Scanner userInput) {
-
+    private void getQuizInfo(Scanner userInput, Quiz quizStatus) {
+        if (!quizStatus.isFinished()) {
+            while (true) {
+                System.out.println("Please enter the course, year level, and score of the essay.");
+                try {
+                    String course = userInput.nextLine();
+                    int yearLevel = Integer.parseInt(userInput.nextLine());
+                    double score = Double.parseDouble(userInput.nextLine());
+                    Quiz quizObject = new Quiz(score, true);
+                    quizObject.setCourse(course);
+                    quizObject.setYearLevel(yearLevel);
+                    displayQuizInfo(quizObject, quizStatus);
+                    addTotal("QUIZ",score);
+                } catch (NumberFormatException e) {
+                    printErrorInvalidConversion();
+                }
+            }
+        }
+        printErrorAlreadyFinished();
+        getType();
     }
 
-    private void displayQuizInfo() {
-
+    private void displayQuizInfo(Quiz quizObject, Quiz quizStatus) {
+        System.out.println("The quiz grade for the course '"+quizObject.getCourse()+"' for the year level of '"+quizObject.getYearLevel()+"' is "+ quizObject.getScore());
+        quizStatus.setFinished(true);
     }
 
+    private void addTotal(String type, double score) {
+        if (type == "EXAM") {
+            double examScore = score * 0.50;
+        }
+        if (type == "QUIZ") {
+            double quizScore = score * 0.20;
+        }
+        if (type == "ESSAY") {
+            double essayScore = score * 0.30;
+        }
+        if (type == "FINISH") {
 
-
-    private void computeTotal() {
-
+        }
     }
     
     /*

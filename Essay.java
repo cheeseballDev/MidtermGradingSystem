@@ -1,4 +1,4 @@
-package College;
+package MidtermGradingSystem;
 
 public class Essay extends Midterm {
     private double score;
