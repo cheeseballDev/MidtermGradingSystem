@@ -3,19 +3,23 @@ package MidtermGradingSystem;
 import java.util.Scanner;
 
 public class Grades implements Runnable {
+    private double examScore = 0;
+    private double quizScore = 0;
+    private double essayScore = 0;
+
     public void getType() {
+        clearScreen();
         Scanner userInput = new Scanner(System.in);
-        // add if statement to check if all processes are done.
         Exam examStatus = new Exam();
         Quiz quizStatus = new Quiz();
         Essay essayStatus = new Essay();
         while (true) {
-            if(!examStatus.isFinished() && !quizStatus.isFinished() && !essayStatus.isFinished()){
-                System.out.println("Please select of the following: 'EXAM' 'QUIZ' 'ESSAY'");
-                String choice = userInput.nextLine();
-                getGradeType(userInput, choice, examStatus, quizStatus, essayStatus);
+            if(examStatus.isFinished() && quizStatus.isFinished() && essayStatus.isFinished()){
+                break;
             }
-            break;
+            System.out.println("Please select of the following: 'EXAM' 'QUIZ' 'ESSAY'");
+            String choice = userInput.nextLine().toUpperCase().trim();
+            getGradeType(userInput, choice, examStatus, quizStatus, essayStatus);
         }
         addTotal("FINISH", 0);
     }
@@ -33,6 +37,7 @@ public class Grades implements Runnable {
                 break;
             default:
                 printErrorInvalidUserType();
+                getType();
         }
     }
 
@@ -41,9 +46,11 @@ public class Grades implements Runnable {
      */
 
     private void getExamInfo(Scanner userInput, Exam examStatus) {
-        if (!examStatus.isFinished()) {
+        if (examStatus.isFinished()) {
+            printErrorAlreadyFinished();
+        } else {
             while (true) {
-                System.out.println("Please enter the course, year level, and score of the exam.");
+            System.out.println("Please enter the course, year level, and score of the exam.");
                 try {
                     String course = userInput.nextLine();
                     int yearLevel = Integer.parseInt(userInput.nextLine());
@@ -51,20 +58,19 @@ public class Grades implements Runnable {
                     Exam examObject = new Exam(score, true);
                     examObject.setCourse(course);
                     examObject.setYearLevel(yearLevel);
-                    displayExamInfo(examObject, examStatus);
+                    displayExamInfo(examObject);
                     addTotal("EXAM",score);
+                    break;
                 } catch (NumberFormatException e) {
                     printErrorInvalidConversion();
                 }
             }
+        examStatus.setFinished(true);
         }
-        printErrorAlreadyFinished();
-        getType();
     }
 
-    private void displayExamInfo(Exam examObject, Exam examStatus) {
+    private void displayExamInfo(Exam examObject) {
         System.out.println("The exam grade for the course '"+examObject.getCourse()+"' for the year level of '"+examObject.getYearLevel()+"' is "+examObject.getScore());
-        examStatus.setFinished(true);
     }
 
     /*
@@ -72,9 +78,11 @@ public class Grades implements Runnable {
      */
 
     private void getEssayInfo(Scanner userInput, Essay essayStatus) {
-        if (!essayStatus.isFinished()) {
+        if (essayStatus.isFinished()) {
+            printErrorAlreadyFinished();
+        } else {
             while (true) {
-                System.out.println("Please enter the course, year level, and score of the essay.");
+                    System.out.println("Please enter the course, year level, and score of the essay.");
                 try {
                     String course = userInput.nextLine();
                     int yearLevel = Integer.parseInt(userInput.nextLine());
@@ -82,20 +90,19 @@ public class Grades implements Runnable {
                     Essay essayObject = new Essay(score, true);
                     essayObject.setCourse(course);
                     essayObject.setYearLevel(yearLevel);
-                    displayEssayInfo(essayObject, essayStatus);
-                    addTotal("ESSAY" , score);
+                    displayEssayInfo(essayObject);
+                    addTotal("ESSAY", score);
+                    break;
                 } catch (NumberFormatException e) {
                     printErrorInvalidConversion();
                 }
             }
+            essayStatus.setFinished(true);
         }
-        printErrorAlreadyFinished();
-        getType();
     }
 
-    private void displayEssayInfo(Essay essayObject, Essay essayStatus) {
+    private void displayEssayInfo(Essay essayObject) {
         System.out.println("The essay grade for the course '"+essayObject.getCourse()+"' for the year level of '"+essayObject.getYearLevel()+"' is "+ essayObject.getScore());
-        essayObject.setFinished(true);
     }
 
     /*
@@ -103,44 +110,47 @@ public class Grades implements Runnable {
      */
 
     private void getQuizInfo(Scanner userInput, Quiz quizStatus) {
-        if (!quizStatus.isFinished()) {
+        if (quizStatus.isFinished()) {
+            printErrorAlreadyFinished();
+        } else {
             while (true) {
-                System.out.println("Please enter the course, year level, and score of the essay.");
+                    System.out.println("Please enter the title, the score you got, and the total score of the quiz.");
                 try {
-                    String course = userInput.nextLine();
-                    int yearLevel = Integer.parseInt(userInput.nextLine());
+                    String title = userInput.nextLine();
                     double score = Double.parseDouble(userInput.nextLine());
+                    double totalScore= Double.parseDouble(userInput.nextLine());
                     Quiz quizObject = new Quiz(score, true);
-                    quizObject.setCourse(course);
-                    quizObject.setYearLevel(yearLevel);
-                    displayQuizInfo(quizObject, quizStatus);
-                    addTotal("QUIZ",score);
+                    quizObject.setTitle(title);
+                    quizObject.setTotalScore(totalScore);
+                    displayQuizInfo(quizObject);
+                    addTotal("QUIZ", score);
+                    break;
                 } catch (NumberFormatException e) {
                     printErrorInvalidConversion();
                 }
             }
+            quizStatus.setFinished(true);
         }
-        printErrorAlreadyFinished();
-        getType();
     }
 
-    private void displayQuizInfo(Quiz quizObject, Quiz quizStatus) {
-        System.out.println("The quiz grade for the course '"+quizObject.getCourse()+"' for the year level of '"+quizObject.getYearLevel()+"' is "+ quizObject.getScore());
-        quizStatus.setFinished(true);
+    private void displayQuizInfo(Quiz quizObject) {
+        System.out.println("Your quiz, titled '" + quizObject.getTitle() +"' is scored at " + quizObject.getScore() + " out of " + quizObject.getTotalScore());
     }
 
     private void addTotal(String type, double score) {
-        if (type == "EXAM") {
-            double examScore = score * 0.50;
+        if (type.equals("EXAM")) {
+            examScore = score * 0.50;
         }
-        if (type == "QUIZ") {
-            double quizScore = score * 0.20;
+        if (type.equals("QUIZ")) {
+            quizScore = score * 0.20;
         }
-        if (type == "ESSAY") {
-            double essayScore = score * 0.30;
+        if (type.equals("ESSAY")) {
+            essayScore = score * 0.30;
         }
-        if (type == "FINISH") {
-
+        if (type.equals("FINISH")) {
+            double totalScore = examScore + quizScore + essayScore;
+            System.out.println("The total grade of your midterms is " + totalScore);
+            System.exit(0);
         }
     }
     
@@ -155,7 +165,7 @@ public class Grades implements Runnable {
 
         for(int i = 0; i < characters.length; i++) {
             System.out.print(characters[i]);
-            pause(300);
+            run();
         }
         clearScreen();
     }
@@ -167,7 +177,7 @@ public class Grades implements Runnable {
 
         for(int i = 0; i < characters.length; i++) {
             System.out.print(characters[i]);
-            pause(300);
+            run();
         }
         clearScreen();
     }
@@ -179,15 +189,14 @@ public class Grades implements Runnable {
 
         for(int i = 0; i < characters.length; i++) {
             System.out.print(characters[i]);
-            pause(300);
+            run();
         }
         clearScreen();
     }
 
-    public void run() {}
-    public void pause(int milliseconds) {
+    public void run() {
         try {
-            Thread.sleep(milliseconds);
+            Thread.sleep(350);
         } catch (Exception e) {
             e.printStackTrace();
         }

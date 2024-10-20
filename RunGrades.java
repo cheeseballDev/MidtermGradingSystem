@@ -1,4 +1,4 @@
-package College;
+package MidtermGradingSystem;
 
 public class RunGrades {
     public static void main(String[] args) {

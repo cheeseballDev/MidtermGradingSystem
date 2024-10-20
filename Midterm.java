@@ -1,23 +1,23 @@
 package MidtermGradingSystem;
 
 public class Midterm extends Grades {
-    private String course;
-    private int yearLevel;
+    private String title;
+    private double  totalScore;
 
-    public void setCourse(String course) {
-        this.course = course;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getCourse() {
-        return course;
+    public String getTitle() {
+        return title;
     }
 
-    public void setYearLevel(int yearLevel) {
-        this.yearLevel = yearLevel;
+    public void setTotalScore(double totalScore) {
+        this.totalScore = totalScore;
     }
 
-    public int getYearLevel() {
-        return yearLevel;
+    public double getTotalScore() {
+        return totalScore;
     }
 }
 
