@@ -9,10 +9,6 @@ public class Quiz extends Midterm {
         this.status = status;
     }
 
-    public Quiz() {
-        this.status = false;
-    }
-
     public void setScore(double score) {
         this.score = score;
     }
@@ -21,7 +17,7 @@ public class Quiz extends Midterm {
         return score;
     }
 
-    public void setFinished(boolean status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 

@@ -10,34 +10,33 @@ public class Grades implements Runnable {
     public void getType() {
         clearScreen();
         Scanner userInput = new Scanner(System.in);
-        Exam examStatus = new Exam();
-        Quiz quizStatus = new Quiz();
-        Essay essayStatus = new Essay();
+        Exam examObject = new Exam(0, false);
+        Quiz quizObject = new Quiz(0, false);
+        Essay essayObject = new Essay(0, false);
         while (true) {
-            if(examStatus.isFinished() && quizStatus.isFinished() && essayStatus.isFinished()){
+            if(examObject.isFinished() && quizObject.isFinished() && essayObject.isFinished()){
                 break;
             }
             System.out.println("Please select of the following: 'EXAM' 'QUIZ' 'ESSAY'");
             String choice = userInput.nextLine().toUpperCase().trim();
-            getGradeType(userInput, choice, examStatus, quizStatus, essayStatus);
+            getGradeType(userInput, choice, examObject, quizObject, essayObject);
         }
-        addTotal("FINISH", 0);
+        addTotal("FINISH", 0, 0);
     }
 
-    private void getGradeType(Scanner userInput, String choice, Exam examStatus, Quiz quizStatus ,Essay essayStatus) {
+    private void getGradeType(Scanner userInput, String choice, Exam examObject, Quiz quizObject ,Essay essayObject) {
         switch (choice) {
             case "EXAM":
-                getExamInfo(userInput, examStatus);
+                getExamInfo(userInput, examObject);
                 break;
             case "QUIZ":
-                getQuizInfo(userInput, quizStatus);
+                getQuizInfo(userInput, quizObject);
                 break;
             case "ESSAY":
-                getEssayInfo(userInput, essayStatus);
+                getEssayInfo(userInput, essayObject);
                 break;
             default:
                 printErrorInvalidUserType();
-                getType();
         }
     }
 
@@ -45,91 +44,121 @@ public class Grades implements Runnable {
      * EXAM
      */
 
-    private void getExamInfo(Scanner userInput, Exam examStatus) {
-        if (examStatus.isFinished()) {
+    private void getExamInfo(Scanner userInput, Exam examObject) {
+        if (examObject.isFinished()) {
             printErrorAlreadyFinished();
         } else {
             while (true) {
-            System.out.println("Please enter the course, year level, and score of the exam.");
-                try {
-                    String course = userInput.nextLine();
-                    int yearLevel = Integer.parseInt(userInput.nextLine());
-                    double score = Double.parseDouble(userInput.nextLine());
-                    Exam examObject = new Exam(score, true);
-                    examObject.setCourse(course);
-                    examObject.setYearLevel(yearLevel);
-                    displayExamInfo(examObject);
-                    addTotal("EXAM",score);
-                    break;
-                } catch (NumberFormatException e) {
-                    printErrorInvalidConversion();
+                System.out.println("Please enter the title, the score you got, and the total score of the exam.");
+                    String title = userInput.nextLine().trim();
+                    String score = userInput.nextLine().trim();
+                    String totalScore = userInput.nextLine().trim();
+                if (title.isEmpty() || score.isEmpty() || totalScore.isEmpty()) {
+                    printErrorEmpty();
+                    continue;
                 }
+                
+                if (!score.matches("[0-9]*\\.?[0-9]+") || !totalScore.matches("[0-9]*\\.?[0-9]+")) {
+                    printErrorInvalidConversion();
+                    continue;
+                }
+                    double scoreFinal = Double.parseDouble(score);
+                    double totalScoreFinal = Double.parseDouble(totalScore);
+                if (scoreFinal > totalScoreFinal) {
+                    printErrorScoreIsLowerThanTotal();
+                    continue;
+                }
+                    examObject.setTitle(title);
+                    examObject.setScore(scoreFinal);
+                    examObject.setTotalScore(totalScoreFinal);
+                    displayExamInfo(examObject);
+                    addTotal("EXAM",scoreFinal, totalScoreFinal);
+                    break;
+                    
             }
-        examStatus.setFinished(true);
+            examObject.setStatus(true);
         }
     }
 
     private void displayExamInfo(Exam examObject) {
-        System.out.println("The exam grade for the course '"+examObject.getCourse()+"' for the year level of '"+examObject.getYearLevel()+"' is "+examObject.getScore());
+        System.out.println("Your exam, titled '" + examObject.getTitle() +"' is scored at " + examObject.getScore() + " out of " + examObject.getTotalScore());
     }
 
     /*
      * ESSAY
      */
 
-    private void getEssayInfo(Scanner userInput, Essay essayStatus) {
-        if (essayStatus.isFinished()) {
+    private void getEssayInfo(Scanner userInput, Essay essayObject) {
+        if (essayObject.isFinished()) {
             printErrorAlreadyFinished();
         } else {
             while (true) {
-                    System.out.println("Please enter the course, year level, and score of the essay.");
-                try {
-                    String course = userInput.nextLine();
-                    int yearLevel = Integer.parseInt(userInput.nextLine());
-                    double score = Double.parseDouble(userInput.nextLine());
-                    Essay essayObject = new Essay(score, true);
-                    essayObject.setCourse(course);
-                    essayObject.setYearLevel(yearLevel);
-                    displayEssayInfo(essayObject);
-                    addTotal("ESSAY", score);
-                    break;
-                } catch (NumberFormatException e) {
+                System.out.println("Please enter the title, the score you got, and the total score of the essay.");
+                    String title = userInput.nextLine();
+                    String score = userInput.nextLine();
+                    String totalScore = userInput.nextLine();
+                if (!score.matches("[0-9]*\\.?[0-9]+") || !totalScore.matches("[0-9]*\\.?[0-9]+")) {
                     printErrorInvalidConversion();
+                    continue;
                 }
+                    double scoreFinal = Double.parseDouble(score);
+                    double totalScoreFinal = Double.parseDouble(totalScore);
+                if (scoreFinal > totalScoreFinal) {
+                    printErrorScoreIsLowerThanTotal();
+                    continue;
+                }
+                    essayObject.setTitle(title);
+                    essayObject.setScore(scoreFinal);
+                    essayObject.setTotalScore(totalScoreFinal);
+                    displayEssayInfo(essayObject);
+                    addTotal("ESSAY",scoreFinal, totalScoreFinal);
+                    break;
+                    
             }
-            essayStatus.setFinished(true);
+            essayObject.setStatus(true);
         }
     }
 
     private void displayEssayInfo(Essay essayObject) {
-        System.out.println("The essay grade for the course '"+essayObject.getCourse()+"' for the year level of '"+essayObject.getYearLevel()+"' is "+ essayObject.getScore());
+        System.out.println("Your essay, titled '" + essayObject.getTitle() +"' is scored at " + essayObject.getScore() + " out of " + essayObject.getTotalScore());
     }
 
     /*
      * QUIZ
      */
 
-    private void getQuizInfo(Scanner userInput, Quiz quizStatus) {
-        if (quizStatus.isFinished()) {
+    private void getQuizInfo(Scanner userInput, Quiz quizObject) {
+        if (quizObject.isFinished()) {
             printErrorAlreadyFinished();
         } else {
             while (true) {
-                    System.out.println("Please enter the title, the score you got, and the total score of the quiz.");
-                try {
+                System.out.println("Please enter the title, the score you got, and the total score of the quiz.");
                     String title = userInput.nextLine();
-                    double score = Double.parseDouble(userInput.nextLine());
-                    double totalScore= Double.parseDouble(userInput.nextLine());
-                    Quiz quizObject = new Quiz(score, true);
-                    quizObject.setTitle(title);
-                    quizObject.setTotalScore(totalScore);
-                    displayQuizInfo(quizObject);
-                    addTotal("QUIZ", score);
-                    break;
-                } catch (NumberFormatException e) {
-                    printErrorInvalidConversion();
+                    String score = userInput.nextLine();
+                    String totalScore = userInput.nextLine();
+                if (title.isEmpty() || score.isEmpty() || totalScore.isEmpty()) {
+                    printErrorEmpty();
+                    continue;
                 }
+                if (!score.matches("[0-9]*\\.?[0-9]+") || !totalScore.matches("[0-9]*\\.?[0-9]+")) {
+                    printErrorInvalidConversion();
+                    continue;
+                }
+                    double scoreFinal = Double.parseDouble(score);
+                    double totalScoreFinal = Double.parseDouble(totalScore);
+                if (scoreFinal > totalScoreFinal) {
+                    printErrorScoreIsLowerThanTotal();
+                    continue;
+                }
+                    quizObject.setTitle(title);
+                    quizObject.setScore(scoreFinal);
+                    quizObject.setTotalScore(totalScoreFinal);
+                    displayQuizInfo(quizObject);
+                    addTotal("QUIZ",scoreFinal, totalScoreFinal);
+                    break;
+                    
             }
-            quizStatus.setFinished(true);
+            quizObject.setStatus(true);
         }
     }
 
@@ -137,19 +166,23 @@ public class Grades implements Runnable {
         System.out.println("Your quiz, titled '" + quizObject.getTitle() +"' is scored at " + quizObject.getScore() + " out of " + quizObject.getTotalScore());
     }
 
-    private void addTotal(String type, double score) {
+    /*
+     * COMPUTE
+     */
+
+    private void addTotal(String type, double scoreFinal, double totalScoreFinal) {
         if (type.equals("EXAM")) {
-            examScore = score * 0.50;
+            examScore = (scoreFinal / totalScoreFinal) * 0.5;
         }
         if (type.equals("QUIZ")) {
-            quizScore = score * 0.20;
+            quizScore = (scoreFinal / totalScoreFinal)* 0.20;
         }
         if (type.equals("ESSAY")) {
-            essayScore = score * 0.30;
+            essayScore = (scoreFinal / totalScoreFinal) * 0.30;
         }
         if (type.equals("FINISH")) {
-            double totalScore = examScore + quizScore + essayScore;
-            System.out.println("The total grade of your midterms is " + totalScore);
+            double totalScore = (examScore + quizScore + essayScore) * 100;
+            System.out.printf("The total grade of your midterms is %.2f", totalScore);
             System.exit(0);
         }
     }
@@ -182,9 +215,32 @@ public class Grades implements Runnable {
         clearScreen();
     }
 
+    private void printErrorEmpty() {
+        clearScreen();
+        System.out.print("One value is empty, please try again!");
+        char[] characters = {'.', ' ', '.', ' ', '.', ' ', '.'};
+
+        for(int i = 0; i < characters.length; i++) {
+            System.out.print(characters[i]);
+            run();
+        }
+        clearScreen();
+    }
+
     private void printErrorAlreadyFinished() {
         clearScreen();
-        System.out.print("That type is already finished! Try another one!");
+        System.out.print("That type is already finished, select another one instead!");
+        char[] characters = {'.', ' ', '.', ' ', '.', ' ', '.'};
+
+        for(int i = 0; i < characters.length; i++) {
+            System.out.print(characters[i]);
+            run();
+        }
+        clearScreen();
+    }
+    private void printErrorScoreIsLowerThanTotal() {
+        clearScreen();
+        System.out.print("User score is lower than total score of the exam, please try again!");
         char[] characters = {'.', ' ', '.', ' ', '.', ' ', '.'};
 
         for(int i = 0; i < characters.length; i++) {

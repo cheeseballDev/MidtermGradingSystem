@@ -9,10 +9,6 @@ public class Exam extends Midterm {
         this.status = status;
     }
 
-    public Exam() {
-        this.status = false;
-    }
-
     public void setScore(double score) {
         this.score = score;
     }
@@ -21,13 +17,11 @@ public class Exam extends Midterm {
         return score;
     }
 
-    public void setFinished(boolean status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 
     public boolean isFinished() {
         return status;
     }
-
-    
 }
